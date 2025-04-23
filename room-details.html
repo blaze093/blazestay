@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Details - BlazeStay</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Flatpickr Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        .room-details-section {
+            padding: 80px 0;
+            background-color: var(--bg-light);
+        }
+        
+        .room-details-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        .room-gallery {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .main-image {
+            height: 400px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .main-image:hover img {
+            transform: scale(1.05);
+        }
+        
+        .gallery-thumbs {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 15px;
+        }
+        
+        .thumb {
+            height: 80px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+        
+        .thumb:hover {
+            opacity: 1;
+        }
+        
+        .thumb.active {
+            opacity: 1;
+            box-shadow: 0 0 0 2px var(--primary-color);
+        }
+        
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .room-info {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .room-title {
+            margin-bottom: 15px;
+        }
+        
+        .room-title h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .room-location {
+            display: flex;
+            align-items: center;
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        
+        .room-location i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+        
+        .room-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .room-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background-color: rgba(255, 90, 95, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .room-badge.verified {
+            background-color: rgba(0, 166, 153, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .room-description {
+            margin-bottom: 30px;
+            line-height: 1.8;
+            color: var(--text-color);
+        }
+        
+        .room-features {
+            margin-bottom: 30px;
+        }
+        
+        .room-features h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .room-features h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 90, 95, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        
+        .room-rules {
+            margin-bottom: 30px;
+        }
+        
+        .room-rules h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .room-rules h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .rules-list {
+            list-style: none;
+        }
+        
+        .rules-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .rules-list li i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .room-map {
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .room-map iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .booking-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .booking-price {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .price-period {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        
+        .booking-details {
+            margin-bottom: 20px;
+        }
+        
+        .booking-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .booking-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .booking-detail-label {
+            color: var(--text-light);
+        }
+        
+        .booking-detail-value {
+            font-weight: 500;
+        }
+        
+        .booking-form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 90, 95, 0.2);
+            outline: none;
+        }
+        
+        .owner-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            margin-top: 30px;
+        }
+        
+        .owner-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px;
+            border: 2px solid var(--primary-color);
+        }
+        
+        .owner-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .owner-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .owner-info p {
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .owner-contact {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .owner-contact-btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .owner-contact-btn.message {
+            background-color: rgba(255, 90, 95, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .owner-contact-btn.message:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .owner-contact-btn.call {
+            background-color: rgba(0, 166, 153, 0.1);
+            color: var(--secondary-color);
+        }
+        
+        .owner-contact-btn.call:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .similar-rooms {
+            margin-top: 50px;
+        }
+        
+        .similar-rooms h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .similar-rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .room-details-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .booking-card {
+                position: static;
+                margin-bottom: 30px;
+            }
+            
+            .main-image {
+                height: 300px;
+            }
+            
+            .gallery-thumbs {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .gallery-thumbs {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .gallery-thumbs {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .room-title h1 {
+                font-size: 1.5rem;
+            }
+            
+            .booking-price {
+                font-size: 1.5rem;
+            }
+            
+            .owner-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .owner-avatar {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .owner-contact {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>
+            </svg>
+            <h2 class="loading-text">Blaze<span>Stay</span></h2>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1 class="animate-character">Blaze<span>Stay</span></h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="listings.html" class="active">Rooms</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="owner-login.html" class="btn btn-outline">Login</a>
+                    <a href="owner-signup.html" class="btn btn-primary">Sign Up</a>
+                </div>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Nav -->
+    <div class="mobile-nav">
+        <ul class="mobile-nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="listings.html" class="active">Rooms</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="mobile-auth-buttons">
+            <a href="owner-login.html" class="btn btn-outline">Login</a>
+            <a href="owner-signup.html" class="btn btn-primary">Sign Up</a>
+        </div>
+    </div>
+    <div class="overlay"></div>
+
+    <!-- Room Details Section -->
+    <section class="room-details-section">
+        <div class="container">
+            <div class="room-details-container">
+                <div class="room-details-left">
+                    <div class="room-gallery" data-aos="fade-up">
+                        <div class="main-image">
+                            <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Room" id="main-room-image">
+                        </div>
+                        <div class="gallery-thumbs">
+                            <div class="thumb active" data-img="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80">
+                                <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Room Thumbnail">
+                            </div>
+                            <div class="thumb" data-img="https://images.unsplash.com/photo-1560185127-6ed189bf02f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80">
+                                <img src="https://images.unsplash.com/photo-1560185127-6ed189bf02f4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Room Thumbnail">
+                            </div>
+                            <div class="thumb" data-img="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1558&q=80">
+                                <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1558&q=80" alt="Room Thumbnail">
+                            </div>
+                            <div class="thumb" data-img="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80">
+                                <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Room Thumbnail">
+                            </div>
+                            <div class="thumb" data-img="https://images.unsplash.com/photo-1631049035182-249067d7618e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80">
+                                <img src="https://images.unsplash.com/photo-1631049035182-249067d7618e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Room Thumbnail">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="room-info" data-aos="fade-up">
+                        <div class="room-title">
+                            <h1>Modern Studio Apartment</h1>
+                            <div class="room-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Andheri East, Mumbai, Maharashtra</span>
+                            </div>
+                        </div>
+                        
+                        <div class="room-badges">
+                            <div class="room-badge verified">
+                                <i class="fas fa-check-circle"></i> Verified
+                            </div>
+                            <div class="room-badge">
+                                <i class="fas fa-home"></i> Studio
+                            </div>
+                            <div class="room-badge">
+                                <i class="fas fa-user"></i> Single Occupancy
+                            </div>
+                            <div class="room-badge">
+                                <i class="fas fa-venus-mars"></i> Any Gender
+                            </div>
+                        </div>
+                        
+                        <div class="room-description">
+                            <p>This modern studio apartment is perfect for young professionals or students looking for a comfortable and convenient place to stay. Located in the heart of Andheri East, it offers easy access to major tech parks, shopping centers, and public transportation.</p>
+                            <p>The apartment features a spacious living area with a comfortable bed, a fully equipped kitchenette, and a clean attached bathroom. It comes fully furnished with all essential amenities including high-speed internet, air conditioning, and 24/7 power backup. The building has good security with CCTV cameras and a security guard.</p>
+                        </div>
+                        
+                        <div class="room-features">
+                            <h3>Amenities & Features</h3>
+                            <div class="features-grid">
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-wifi"></i>
+                                    </div>
+                                    <span>High-Speed WiFi</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-snowflake"></i>
+                                    </div>
+                                    <span>Air Conditioning</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-tv"></i>
+                                    </div>
+                                    <span>Smart TV</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <span>Kitchenette</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-couch"></i>
+                                    </div>
+                                    <span>Fully Furnished</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-bolt"></i>
+                                    </div>
+                                    <span>Power Backup</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <span>24/7 Security</span>
+                                </div>
+                                <div class="feature-item">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-parking"></i>
+                                    </div>
+                                    <span>Parking Available</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="room-rules">
+                            <h3>House Rules</h3>
+                            <ul class="rules-list">
+                                <li><i class="fas fa-check"></i> No smoking inside the apartment</li>
+                                <li><i class="fas fa-check"></i> No loud music after 10 PM</li>
+                                <li><i class="fas fa-check"></i> Guests allowed with prior permission</li>
+                                <li><i class="fas fa-check"></i> Pets not allowed</li>
+                                <li><i class="fas fa-check"></i> Security deposit required (refundable)</li>
+                                <li><i class="fas fa-check"></i> Minimum stay: 3 months</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="room-map">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3770.0098436849613!2d72.8502324!3d19.1070576!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7c83e7c0d2f17%3A0xb5e13173f2a0d9c9!2sAndheri%20East%2C%20Mumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1623456789012!5m2!1sen!2sin" allowfullscreen="" loading="lazy"></iframe>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="room-details-right">
+                    <div class="booking-card" data-aos="fade-up">
+                        <div class="booking-price">₹15,000</div>
+                        <div class="price-period">per month</div>
+                        
+                        <div class="booking-details">
+                            <div class="booking-detail">
+                                <div class="booking-detail-label">Security Deposit</div>
+                                <div class="booking-detail-value">₹30,000</div>
+                            </div>
+                            <div class="booking-detail">
+                                <div class="booking-detail-label">Maintenance</div>
+                                <div class="booking-detail-value">₹1,000/month</div>
+                            </div>
+                            <div class="booking-detail">
+                                <div class="booking-detail-label">Electricity</div>
+                                <div class="booking-detail-value">As per usage</div>
+                            </div>
+                            <div class="booking-detail">
+                                <div class="booking-detail-label">Available From</div>
+                                <div class="booking-detail-value">Immediate</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" style="width: 100%;">Book Now</button>
+                        
+                        <div class="booking-form">
+                            <h3>Schedule a Visit</h3>
+                            <form class="demo-form">
+                                <div class="form-group">
+                                    <label for="visit-date">Preferred Date</label>
+                                    <input type="text" id="visit-date" class="date-picker" placeholder="Select date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="visit-time">Preferred Time</label>
+                                    <select id="visit-time" required>
+                                        <option value="" disabled selected>Select time</option>
+                                        <option value="10:00">10:00 AM</option>
+                                        <option value="11:00">11:00 AM</option>
+                                        <option value="12:00">12:00 PM</option>
+                                        <option value="13:00">1:00 PM</option>
+                                        <option value="14:00">2:00 PM</option>
+                                        <option value="15:00">3:00 PM</option>
+                                        <option value="16:00">4:00 PM</option>
+                                        <option value="17:00">5:00 PM</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="visit-message">Message (Optional)</label>
+                                    <textarea id="visit-message" placeholder="Any specific requirements or questions..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-secondary" style="width: 100%;">Schedule Visit</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="owner-card" data-aos="fade-up">
+                        <div class="owner-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Owner Avatar">
+                        </div>
+                        <div class="owner-info">
+                            <h3>John Doe</h3>
+                            <p>Property Owner</p>
+                            <div class="owner-contact">
+                                <div class="owner-contact-btn message">
+                                    <i class="fas fa-comment"></i> Message
+                                </div>
+                                <div class="owner-contact-btn call">
+                                    <i class="fas fa-phone-alt"></i> Call
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="similar-rooms">
+                <h2>Similar Rooms</h2>
+                <div class="similar-rooms-grid">
+                    <div class="room-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="room-badge verified">Verified</div>
+                        <div class="room-image">
+                            <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Room">
+                        </div>
+                        <div class="room-details">
+                            <h3>Cozy 1BHK with Balcony</h3>
+                            <div class="room-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Powai, Mumbai</span>
+                            </div>
+                            <div class="room-info">
+                                <span><i class="fas fa-home"></i> 1BHK</span>
+                                <span><i class="fas fa-user"></i> Single/Couple</span>
+                                <span><i class="fas fa-venus-mars"></i> Any</span>
+                            </div>
+                            <div class="room-price">
+                                <h4>₹18,000 <span>/ month</span></h4>
+                            </div>
+                            <a href="room-details.html" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                    
+                    <div class="room-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="room-badge verified">Verified</div>
+                        <div class="room-image">
+                            <img src="https://images.unsplash.com/photo-1598928506311-c55ded91a20c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Room">
+                        </div>
+                        <div class="room-details">
+                            <h3>Luxury 2BHK Apartment</h3>
+                            <div class="room-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Bandra West, Mumbai</span>
+                            </div>
+                            <div class="room-info">
+                                <span><i class="fas fa-home"></i> 2BHK</span>
+                                <span><i class="fas fa-user"></i> Family</span>
+                                <span><i class="fas fa-venus-mars"></i> Any</span>
+                            </div>
+                            <div class="room-price">
+                                <h4>₹25,000 <span>/ month</span></h4>
+                            </div>
+                            <a href="room-details.html" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                    
+                    <div class="room-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="room-badge verified">Verified</div>
+                        <div class="room-image">
+                            <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Room">
+                        </div>
+                        <div class="room-details">
+                            <h3>Single Room with Attached Bathroom</h3>
+                            <div class="room-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Dadar, Mumbai</span>
+                            </div>
+                            <div class="room-info">
+                                <span><i class="fas fa-home"></i> Single Room</span>
+                                <span><i class="fas fa-user"></i> Single</span>
+                                <span><i class="fas fa-venus-mars"></i> Male</span>
+                            </div>
+                            <div class="room-price">
+                                <h4>₹12,000 <span>/ month</span></h4>
+                            </div>
+                            <a href="room-details.html" class="btn btn-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-wave">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#333" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,202.7C672,203,768,181,864,181.3C960,181,1056,203,1152,208C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>Blaze<span>Stay</span></h2>
+                    <p>Find your perfect room without the hassle.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-link-group">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="listings.html">Find Rooms</a></li>
+                            <li><a href="owner-signup.html">List Your Room</a></li>
+                            <li><a href="faq.html">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>Cities</h3>
+                        <ul>
+                            <li><a href="listings.html?city=mumbai">Mumbai</a></li>
+                            <li><a href="listings.html?city=delhi">Delhi</a></li>
+                            <li><a href="listings.html?city=bangalore">Bangalore</a></li>
+                            <li><a href="listings.html?city=hyderabad">Hyderabad</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>Support</h3>
+                        <ul>
+                            <li><a href="contact.html">Contact Us</a></li>
+                            <li><a href="terms.html">Terms of Service</a></li>
+                            <li><a href="privacy.html">Privacy Policy</a></li>
+                            <li><a href="#">Report a Problem</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 BlazeStay. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Flatpickr Date Picker -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gallery Thumbnail Click
+            const thumbs = document.querySelectorAll('.thumb');
+            const mainImage = document.getElementById('main-room-image');
+            
+            thumbs.forEach(thumb => {
+                thumb.addEventListener('click', function() {
+                    // Update active thumb
+                    thumbs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update main image with animation
+                    const imgSrc = this.getAttribute('data-img');
+                    mainImage.style.opacity = '0';
+                    mainImage.style.transform = 'scale(0.95)';
+                    
+                    setTimeout(() => {
+                        mainImage.setAttribute('src', imgSrc);
+                        mainImage.style.opacity = '1';
+                        mainImage.style.transform = 'scale(1)';
+                    }, 300);
+                });
+            });
+            
+            // Owner Contact Buttons
+            const messageBtn = document.querySelector('.owner-contact-btn.message');
+            const callBtn = document.querySelector('.owner-contact-btn.call');
+            
+            if (messageBtn) {
+                messageBtn.addEventListener('click', function() {
+                    // Show contact form modal
+                    showToast('Contact Owner', 'Message feature will be available soon!', 'info');
+                });
+            }
+            
+            if (callBtn) {
+                callBtn.addEventListener('click', function() {
+                    // Show phone number
+                    showToast('Contact Owner', 'Call feature will be available soon!', 'info');
+                });
+            }
+            
+            // Initialize date picker
+            if (typeof flatpickr !== 'undefined') {
+                flatpickr('.date-picker', {
+                    minDate: 'today',
+                    dateFormat: 'Y-m-d'
+                });
+            }
+            
+            // Book Now Button
+            const bookNowBtn = document.querySelector('.booking-card .btn-primary');
+            if (bookNowBtn) {
+                bookNowBtn.addEventListener('click', function() {
+                    showToast('Booking', 'Booking feature will be available soon!', 'info');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

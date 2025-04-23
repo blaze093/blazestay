@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlazeStay - Find Your Perfect Room</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="loader">
+            <svg class="circular" viewBox="25 25 50 50">
+                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10"/>
+            </svg>
+            <h2 class="loading-text">Blaze<span>Stay</span></h2>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1 class="animate-character">Blaze<span>Stay</span></h1>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="listings.html">Rooms</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="owner-login.html" class="btn btn-outline">Login</a>
+                    <a href="owner-signup.html" class="btn btn-primary">Sign Up</a>
+                </div>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Nav -->
+    <div class="mobile-nav">
+        <ul class="mobile-nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="listings.html">Rooms</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="mobile-auth-buttons">
+            <a href="owner-login.html" class="btn btn-outline">Login</a>
+            <a href="owner-signup.html" class="btn btn-primary">Sign Up</a>
+        </div>
+    </div>
+    <div class="overlay"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-particles"></div>
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="animate-character">Find Your Perfect Room</h1>
+                <h2>No brokerage. No hassle. Just comfortable living.</h2>
+                <div class="search-container">
+                    <form id="search-form">
+                        <div class="search-group">
+                            <div class="search-input">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <select id="city" name="city">
+                                    <option value="" disabled selected>Select City</option>
+                                    <option value="mumbai">Mumbai</option>
+                                    <option value="delhi">Delhi</option>
+                                    <option value="bangalore">Bangalore</option>
+                                    <option value="hyderabad">Hyderabad</option>
+                                    <option value="pune">Pune</option>
+                                </select>
+                            </div>
+                            <div class="search-input">
+                                <i class="fas fa-rupee-sign"></i>
+                                <select id="budget" name="budget">
+                                    <option value="" disabled selected>Budget Range</option>
+                                    <option value="0-5000">Under ₹5,000</option>
+                                    <option value="5000-10000">₹5,000 - ₹10,000</option>
+                                    <option value="10000-15000">₹10,000 - ₹15,000</option>
+                                    <option value="15000-20000">₹15,000 - ₹20,000</option>
+                                    <option value="20000+">Above ₹20,000</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Search Rooms</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#ffffff" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,149.3C960,160,1056,160,1152,138.7C1248,117,1344,75,1392,53.3L1440,32L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="stat-number" data-count="5000">0</div>
+                    <div class="stat-text">Rooms Listed</div>
+                </div>
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" data-count="3500">0</div>
+                    <div class="stat-text">Happy Tenants</div>
+                </div>
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="stat-number" data-count="1200">0</div>
+                    <div class="stat-text">Property Owners</div>
+                </div>
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="400">
+                    <div class="stat-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="stat-number" data-count="15">0</div>
+                    <div class="stat-text">Cities Covered</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Why Choose BlazeStay?</h2>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <h3>Zero Brokerage</h3>
+                    <p>No hidden fees or brokerage charges. Pay only for your room.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Verified Listings</h3>
+                    <p>All rooms are verified by our team for your safety and comfort.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Quick Process</h3>
+                    <p>Find and book your room in minutes, not days or weeks.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure Payments</h3>
+                    <p>Safe and secure payment options for your convenience.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Rooms Section -->
+    <section class="featured-rooms">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Featured Rooms</h2>
+            <div class="rooms-grid">
+                <div class="room-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="room-badge verified">Verified</div>
+                    <div class="room-image">
+                        <img src="https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1471&q=80" alt="Room in Mumbai">
+                    </div>
+                    <div class="room-details">
+                        <h3>Modern Private Room in Andheri</h3>
+                        <p class="room-location"><i class="fas fa-map-marker-alt"></i> Andheri West, Mumbai</p>
+                        <div class="room-info">
+                            <span><i class="fas fa-bed"></i> Private Room</span>
+                            <span><i class="fas fa-male"></i> Males Only</span>
+                        </div>
+                        <div class="room-price">
+                            <h4>₹12,000<span>/month</span></h4>
+                        </div>
+                        <a href="room.html?id=1" class="btn btn-secondary">View Details</a>
+                    </div>
+                </div>
+                <div class="room-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="room-badge verified">Verified</div>
+                    <div class="room-image">
+                        <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Room in Bangalore">
+                    </div>
+                    <div class="room-details">
+                        <h3>Furnished Shared Room in Koramangala</h3>
+                        <p class="room-location"><i class="fas fa-map-marker-alt"></i> Koramangala, Bangalore</p>
+                        <div class="room-info">
+                            <span><i class="fas fa-users"></i> Shared Room</span>
+                            <span><i class="fas fa-user"></i> Any Gender</span>
+                        </div>
+                        <div class="room-price">
+                            <h4>₹8,500<span>/month</span></h4>
+                        </div>
+                        <a href="room.html?id=2" class="btn btn-secondary">View Details</a>
+                    </div>
+                </div>
+                <div class="room-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="room-badge verified">Verified</div>
+                    <div class="room-image">
+                        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80" alt="Room in Delhi">
+                    </div>
+                    <div class="room-details">
+                        <h3>Spacious Room in South Delhi</h3>
+                        <p class="room-location"><i class="fas fa-map-marker-alt"></i> Hauz Khas, Delhi</p>
+                        <div class="room-info">
+                            <span><i class="fas fa-bed"></i> Private Room</span>
+                            <span><i class="fas fa-female"></i> Females Only</span>
+                        </div>
+                        <div class="room-price">
+                            <h4>₹15,000<span>/month</span></h4>
+                        </div>
+                        <a href="room.html?id=3" class="btn btn-secondary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            <div class="view-all" data-aos="fade-up">
+                <a href="listings.html" class="btn btn-outline">View All Rooms</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">What Our Users Say</h2>
+            <div class="testimonial-slider" data-aos="fade-up">
+                <div class="testimonial-card active">
+                    <div class="testimonial-image">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Testimonial">
+                    </div>
+                    <div class="testimonial-content">
+                        <p>"I found my perfect room through BlazeStay in just 2 days! No broker fees, direct contact with the owner, and a smooth process. Highly recommended!"</p>
+                        <h4>Priya Sharma</h4>
+                        <div class="testimonial-location">Mumbai, India</div>
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-image">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Testimonial">
+                    </div>
+                    <div class="testimonial-content">
+                        <p>"As a property owner, BlazeStay has made it incredibly easy to find reliable tenants. The verification process gives me peace of mind, and I've had great experiences so far."</p>
+                        <h4>Rahul Verma</h4>
+                        <div class="testimonial-location">Bangalore, India</div>
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-image">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Testimonial">
+                    </div>
+                    <div class="testimonial-content">
+                        <p>"Moving to Delhi for my new job was stressful, but finding accommodation was surprisingly easy with BlazeStay. The verified listings gave me confidence, and I found a great place within my budget."</p>
+                        <h4>Anjali Gupta</h4>
+                        <div class="testimonial-location">Delhi, India</div>
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-controls">
+                <button class="testimonial-btn prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="testimonial-dots">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <button class="testimonial-btn next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Owner CTA Section -->
+    <section class="owner-cta">
+        <div class="container">
+            <div class="cta-content" data-aos="fade-right">
+                <h2>Are You a Room Owner?</h2>
+                <p>List your room on BlazeStay and connect with verified tenants. No middlemen, no hassles.</p>
+                <div class="cta-benefits">
+                    <div class="cta-benefit">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Free Listing</span>
+                    </div>
+                    <div class="cta-benefit">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Verified Tenants</span>
+                    </div>
+                    <div class="cta-benefit">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Direct Contact</span>
+                    </div>
+                    <div class="cta-benefit">
+                        <i class="fas fa-check-circle"></i>
+                        <span>No Brokerage Fees</span>
+                    </div>
+                </div>
+                <a href="owner-signup.html" class="btn btn-primary">List Your Room</a>
+            </div>
+            <div class="cta-image" data-aos="fade-left">
+                <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1473&q=80" alt="Room Owner">
+            </div>
+        </div>
+    </section>
+
+    <!-- App Download Section -->
+    <section class="app-download">
+        <div class="container">
+            <div class="app-content" data-aos="fade-right">
+                <h2>Get the BlazeStay App</h2>
+                <p>Find and book rooms on the go with our mobile app. Available for iOS and Android.</p>
+                <div class="app-features">
+                    <div class="app-feature">
+                        <i class="fas fa-search"></i>
+                        <span>Search rooms anywhere, anytime</span>
+                    </div>
+                    <div class="app-feature">
+                        <i class="fas fa-bell"></i>
+                        <span>Get instant notifications</span>
+                    </div>
+                    <div class="app-feature">
+                        <i class="fas fa-comments"></i>
+                        <span>Chat with owners directly</span>
+                    </div>
+                </div>
+                <div class="app-buttons">
+                    <a href="#" class="app-button">
+                        <i class="fab fa-apple"></i>
+                        <div>
+                            <span>Download on the</span>
+                            <strong>App Store</strong>
+                        </div>
+                    </a>
+                    <a href="#" class="app-button">
+                        <i class="fab fa-google-play"></i>
+                        <div>
+                            <span>Get it on</span>
+                            <strong>Google Play</strong>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="app-image" data-aos="fade-left">
+                <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Mobile App">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-wave">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+                <path fill="#333" fill-opacity="1" d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,202.7C672,203,768,181,864,181.3C960,181,1056,203,1152,208C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h2>Blaze<span>Stay</span></h2>
+                    <p>Find your perfect room without the hassle.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-link-group">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="listings.html">Find Rooms</a></li>
+                            <li><a href="owner-signup.html">List Your Room</a></li>
+                            <li><a href="faq.html">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>Cities</h3>
+                        <ul>
+                            <li><a href="listings.html?city=mumbai">Mumbai</a></li>
+                            <li><a href="listings.html?city=delhi">Delhi</a></li>
+                            <li><a href="listings.html?city=bangalore">Bangalore</a></li>
+                            <li><a href="listings.html?city=hyderabad">Hyderabad</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-group">
+                        <h3>Support</h3>
+                        <ul>
+                            <li><a href="contact.html">Contact Us</a></li>
+                            <li><a href="terms.html">Terms of Service</a></li>
+                            <li><a href="privacy.html">Privacy Policy</a></li>
+                            <li><a href="#">Report a Problem</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 BlazeStay. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
