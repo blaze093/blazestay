@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | TazaTokri",
-  description: "Privacy Policy for TazaTokri - Learn how we collect, use, and protect your personal information.",
+  title: "Privacy Policy | FreshKart",
+  description: "Privacy Policy for FreshKart - Learn how we collect, use, and protect your personal information.",
 }
 
 export default function PrivacyPolicyPage() {
@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold text-dark-olive mb-4">1. Introduction</h2>
           <p className="mb-4">
-            Welcome to TazaTokri. We respect your privacy and are committed to protecting your personal data. This
+            Welcome to FreshKart. We respect your privacy and are committed to protecting your personal data. This
             privacy policy will inform you about how we look after your personal data when you visit our website and
             tell you about your privacy rights and how the law protects you.
           </p>
@@ -206,10 +206,10 @@ export default function PrivacyPolicyPage() {
           </p>
           <div className="bg-light-sage p-4 rounded-md">
             <p className="mb-2">
-              <strong>TazaTokri</strong>
+              <strong>FreshKart</strong>
             </p>
-            <p className="mb-2">Email: privacy@tazatokri.com</p>
-            <p>Phone: +880 1234 567890</p>
+            <p className="mb-2">Email: freshkartapp@gmail.com</p>
+            <p>Phone: +91 9958686941</p>
           </div>
         </section>
       </div>

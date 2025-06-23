@@ -81,7 +81,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h2 className="text-3xl font-bold text-dark-olive">Welcome Back</h2>
-          <p className="mt-2 text-gray-600">Sign in to your TazaTokri account</p>
+          <p className="mt-2 text-gray-600">Sign in to your FreshKart account</p>
         </div>
 
         <Card className="farm-card">

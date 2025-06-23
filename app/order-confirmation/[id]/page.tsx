@@ -95,8 +95,8 @@ export default function OrderConfirmationPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "My TazaTokri Order",
-          text: `I just ordered fresh farm products from TazaTokri! Order #${order?.id.slice(-8).toUpperCase()}`,
+          title: "My Freshkart Order",
+          text: `I just ordered fresh farm products from FreshKart! Order #${order?.id.slice(-8).toUpperCase()}`,
           url: window.location.href,
         })
       } catch (error) {

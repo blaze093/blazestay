@@ -51,7 +51,7 @@ export default function AboutPage() {
                 <Sprout className="h-12 w-12 text-natural-green" />
               </div>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">About TazaTokri</h1>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">About FreshKart</h1>
             <p className="text-xl md:text-2xl mb-8 text-green-100 max-w-3xl mx-auto">
               Bridging the gap between farmers and consumers, one fresh delivery at a time
             </p>
@@ -66,7 +66,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-dark-olive mb-6">Our Mission</h2>
               <p className="text-lg text-gray-600 mb-6">
-                TazaTokri was born from a simple yet powerful vision: to create a direct connection between farmers and
+                FreshKart was born from a simple yet powerful vision: to create a direct connection between farmers and
                 consumers, ensuring fresh produce reaches your table while providing fair compensation to our
                 hardworking farmers.
               </p>
@@ -140,7 +140,7 @@ export default function AboutPage() {
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-dark-olive mb-6">Our Story</h2>
               <p className="text-lg text-gray-600 mb-6">
-                TazaTokri started in 2024 when developer Abhinav Pratap Singh witnessed the struggles of rural farmers
+                FreshKart started in 2025 when developer Abhinav Pratap Singh witnessed the struggles of rural farmers
                 trying to get fair prices for their produce. Despite growing the freshest vegetables and fruits, farmers
                 were forced to sell at low prices to middlemen.
               </p>
@@ -150,7 +150,7 @@ export default function AboutPage() {
                 through innovative technology.
               </p>
               <p className="text-lg text-gray-600">
-                Today, TazaTokri is growing to serve multiple cities across India, supporting local farmers and
+                Today, FreshKart is growing to serve multiple cities across India, supporting local farmers and
                 delivering fresh produce to families. We're not just a marketplace; we're a movement towards a more
                 sustainable and equitable food system.
               </p>
@@ -191,7 +191,7 @@ export default function AboutPage() {
                     <div className="mt-6 pt-6 border-t border-gray-200">
                       <div className="space-y-2 text-sm text-gray-600">
                         <p>
-                          <strong>Email:</strong> tazatokri.in@gmail.com
+                          <strong>Email:</strong> freshkartapp@gmail.com
                         </p>
                         <p>
                           <strong>Phone:</strong> +91 9958686941

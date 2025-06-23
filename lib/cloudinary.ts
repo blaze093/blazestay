@@ -1,9 +1,9 @@
 export const CLOUDINARY_CONFIG = {
   cloudName: "dc2v84v36",
-  apiKey: "735295564642131",
-  apiSecret: "eY8NYX-CCr0deZUUDoN7959O1tk",
-  uploadPreset: "blazekart",
-  folder: "blazekart",
+  apiKey: "794873387166543",
+  apiSecret: "b5sYTcYX-kbdv2y-k0QpD250_K4",
+  uploadPreset: "ecoeats",
+  folder: "ecoeats",
 }
 
 export const uploadToCloudinary = async (

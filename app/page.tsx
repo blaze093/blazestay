@@ -339,7 +339,7 @@ export default function HomePage() {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-dark-olive mb-4">Why Choose TazaTokri?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-dark-olive mb-4">Why Choose FreshKart?</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               We bridge the gap between farmers and consumers, ensuring fresh produce and fair prices for everyone
             </p>
@@ -392,7 +392,7 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl md:text-4xl font-bold text-dark-olive mb-6">Ready to Get Fresh?</h2>
           <p className="text-lg text-gray-600 mb-8">
-            Join thousands of customers who trust TazaTokri for their daily fresh produce needs
+            Join thousands of customers who trust FreshKart for their daily fresh produce needs
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup-buyer">

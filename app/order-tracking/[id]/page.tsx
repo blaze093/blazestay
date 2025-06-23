@@ -347,7 +347,7 @@ export default function OrderTrackingPage() {
                 </p>
                 <div className="flex items-center space-x-2 text-sm">
                   <Phone className="h-4 w-4 text-natural-green" />
-                  <span>+91 98765 43210</span>
+                  <span>+91 9958686941</span>
                 </div>
                 <Button variant="outline" className="w-full">
                   Contact Support

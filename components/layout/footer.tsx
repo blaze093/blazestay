@@ -10,7 +10,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center space-x-2 mb-3">
               <div className="text-xl">🌾</div>
-              <span className="text-xl font-bold">TazaTokri</span>
+              <span className="text-xl font-bold">FreshKart</span>
             </div>
             <p className="text-green-100 mb-3 text-sm">
               Connecting farmers directly with consumers for fresh, organic produce.
@@ -70,7 +70,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-3 w-3 text-sunny-yellow" />
-                <span className="text-green-100">tazatokri.in@gmail.com</span>
+                <span className="text-green-100">freshkartapp@gmail.com</span>
               </div>
               <div className="flex items-start space-x-2">
                 <MapPin className="h-3 w-3 text-sunny-yellow mt-1" />
@@ -82,7 +82,7 @@ export default function Footer() {
 
         {/* Bottom Section */}
         <div className="border-t border-green-600 mt-6 pt-4 text-center text-xs text-green-100">
-          © 2024 TazaTokri. All rights reserved. Developed by Abhinav Pratap Singh.
+          © 2025 Freshkart. All rights reserved. Developed by Abhinav Pratap Singh.
         </div>
       </div>
     </footer>

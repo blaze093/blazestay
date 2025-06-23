@@ -6,14 +6,14 @@ import { getStorage } from "firebase/storage"
 import { getAnalytics } from "firebase/analytics"
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD8kPnAVN577757E_S0YMGn4Jo9Zeilqno",
-  authDomain: "tazatokari-4021a.firebaseapp.com",
-  databaseURL: "https://tazatokari-4021a-default-rtdb.firebaseio.com",
-  projectId: "tazatokari-4021a",
-  storageBucket: "tazatokari-4021a.firebasestorage.app",
-  messagingSenderId: "470339614392",
-  appId: "1:470339614392:web:ee4f5480e194f4d733664d",
-  measurementId: "G-1ZNRFV72QB",
+  apiKey: "AIzaSyDcLiR7_UPzwakdqSGY5VIuta936HBEnM8",
+  authDomain: "ecoeats-b7ec2.firebaseapp.com",
+  databaseURL: "https://ecoeats-b7ec2-default-rtdb.firebaseio.com",
+  projectId: "ecoeats-b7ec2",
+  storageBucket: "ecoeats-b7ec2.firebasestorage.app",
+  messagingSenderId: "132145721059",
+  appId: "1:132145721059:web:c1ec95df9a19df04c4dfd6",
+  measurementId: "G-0R5MMTV85J",
 }
 
 // Initialize Firebase
