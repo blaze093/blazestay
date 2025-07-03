@@ -85,7 +85,7 @@ export default function PWAInstallPrompt() {
                 <Smartphone className="h-4 w-4 text-white" />
               </div>
               <div>
-                <CardTitle className="text-sm text-natural-green">Install TazaTokri</CardTitle>
+                <CardTitle className="text-sm text-natural-green">Install FreshKart</CardTitle>
                 <CardDescription className="text-xs">Get the app experience</CardDescription>
               </div>
             </div>
@@ -101,7 +101,7 @@ export default function PWAInstallPrompt() {
         </CardHeader>
         <CardContent className="pt-0">
           <p className="text-xs text-gray-600 mb-3">
-            Install TazaTokri app for faster access, offline browsing, and push notifications.
+            Install FreshKart app for faster access, offline browsing, and push notifications.
           </p>
 
           {deferredPrompt ? (

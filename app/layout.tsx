@@ -9,7 +9,6 @@ import { CartProvider } from "@/lib/cart-context"
 import { WishlistProvider } from "@/lib/wishlist-context"
 import { MessagingProvider } from "@/lib/messaging-context"
 import Navbar from "@/components/layout/navbar"
-import Footer from "@/components/layout/footer"
 import BottomNavigation from "@/components/layout/bottom-navigation"
 import PWAInstallPrompt from "@/components/pwa/pwa-install-prompt"
 import Script from "next/script"
@@ -83,7 +82,7 @@ export default function RootLayout({
                   <div className="flex flex-col min-h-screen">
                     <Navbar />
                     <main className="flex-1 pt-16 pb-20 md:pb-0">{children}</main>
-                    <Footer />
+              
                     <BottomNavigation />
                   </div>
                   <Toaster />

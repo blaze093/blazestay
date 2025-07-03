@@ -4,8 +4,8 @@ import { redirect } from "next/navigation"
 import AdminSidebar from "@/components/admin/admin-sidebar"
 
 export const metadata: Metadata = {
-  title: "TazaTokri Admin Panel",
-  description: "Admin panel for TazaTokri - Fresh Farm Products Marketplace",
+  title: "FreshKart Admin Panel",
+  description: "Admin panel for FreshKart - Fresh Farm Products Marketplace",
 }
 
 export default async function AdminLayout({
