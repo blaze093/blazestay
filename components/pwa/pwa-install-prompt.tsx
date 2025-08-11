@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { X, Download, Smartphone } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[]
@@ -16,114 +17,135 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false)
+  const [showPrompt, setShowPrompt] = useState(false)
   const [isIOS, setIsIOS] = useState(false)
   const [isStandalone, setIsStandalone] = useState(false)
+  const [isInstalled, setIsInstalled] = useState(false)
 
   useEffect(() => {
-    // Check if running in standalone mode
-    setIsStandalone(window.matchMedia("(display-mode: standalone)").matches)
+    if (typeof window !== "undefined") {
+      // Check if already installed
+      const isStandaloneMode = window.matchMedia("(display-mode: standalone)").matches
+      const isInWebAppiOS = (window.navigator as any).standalone === true
+      setIsStandalone(isStandaloneMode || isInWebAppiOS)
 
-    // Check if iOS
-    setIsIOS(/iPad|iPhone|iPod/.test(navigator.userAgent))
+      // Check for iOS
+      const userAgent = window.navigator.userAgent.toLowerCase()
+      setIsIOS(/iphone|ipad|ipod/.test(userAgent))
 
-    // Listen for beforeinstallprompt event
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault()
-      setDeferredPrompt(e as BeforeInstallPromptEvent)
+      // Check if user has dismissed the prompt before
+      const dismissed = sessionStorage.getItem("pwa-install-dismissed")
 
-      // Show install prompt after a delay if not already installed
-      setTimeout(() => {
-        if (!isStandalone) {
-          setShowInstallPrompt(true)
+      // Listen for the beforeinstallprompt event
+      const handleBeforeInstallPrompt = (e: Event) => {
+        e.preventDefault()
+        setDeferredPrompt(e as BeforeInstallPromptEvent)
+
+        // Only show prompt if not already installed and not dismissed
+        if (!isStandaloneMode && !isInWebAppiOS && !dismissed) {
+          // Show prompt after a delay
+          setTimeout(() => {
+            setShowPrompt(true)
+          }, 3000)
         }
-      }, 3000)
-    }
+      }
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+      window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
 
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+      // Listen for app installed event
+      const handleAppInstalled = () => {
+        setIsInstalled(true)
+        setShowPrompt(false)
+        setDeferredPrompt(null)
+      }
+
+      window.addEventListener("appinstalled", handleAppInstalled)
+
+      return () => {
+        window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+        window.removeEventListener("appinstalled", handleAppInstalled)
+      }
     }
-  }, [isStandalone])
+  }, [isStandalone]) // Depend on isStandalone to re-evaluate if it changes
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return
 
-    deferredPrompt.prompt()
-    const { outcome } = await deferredPrompt.userChoice
+    try {
+      await deferredPrompt.prompt()
+      const { outcome } = await deferredPrompt.userChoice
 
-    if (outcome === "accepted") {
+      if (outcome === "accepted") {
+        setIsInstalled(true)
+      }
+
+      setShowPrompt(false)
       setDeferredPrompt(null)
-      setShowInstallPrompt(false)
+    } catch (error) {
+      console.error("Error during PWA installation:", error)
     }
   }
 
   const handleDismiss = () => {
-    setShowInstallPrompt(false)
-    // Don't show again for this session
-    sessionStorage.setItem("pwa-prompt-dismissed", "true")
+    setShowPrompt(false)
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("pwa-install-dismissed", "true")
+    }
   }
 
-  // Don't show if already installed, dismissed, or no prompt available
-  if (
-    isStandalone ||
-    sessionStorage.getItem("pwa-prompt-dismissed") ||
-    (!deferredPrompt && !isIOS) ||
-    !showInstallPrompt
-  ) {
+  // If already installed or prompt is not meant to be shown, return null
+  if (isStandalone || !showPrompt) {
     return null
   }
 
   return (
-    <div className="fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50">
-      <Card className="bg-white shadow-lg border-2 border-natural-green">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="bg-natural-green p-2 rounded-full">
-                <Smartphone className="h-4 w-4 text-white" />
+    <AnimatePresence>
+      {showPrompt && (
+        <motion.div
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 100 }}
+          className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80"
+        >
+          <Card className="shadow-lg border-2 border-natural-green/20 bg-gradient-to-r from-cream to-white">
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-natural-green rounded-lg flex items-center justify-center mr-3">
+                    <Smartphone className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-dark-olive">Install TazaTokri</h3>
+                    <p className="text-sm text-gray-600">Get the app for a better experience</p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleDismiss}
+                  className="h-6 w-6 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-              <div>
-                <CardTitle className="text-sm text-natural-green">Install FreshKart</CardTitle>
-                <CardDescription className="text-xs">Get the app experience</CardDescription>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDismiss}
-              className="h-6 w-6 text-gray-400 hover:text-gray-600"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <p className="text-xs text-gray-600 mb-3">
-            Install FreshKart app for faster access, offline browsing, and push notifications.
-          </p>
 
-          {deferredPrompt ? (
-            <Button
-              onClick={handleInstallClick}
-              className="w-full bg-natural-green hover:bg-natural-green/90 text-white text-sm py-2"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Install App
-            </Button>
-          ) : isIOS ? (
-            <div className="text-xs text-gray-600">
-              <p className="mb-2">To install on iOS:</p>
-              <ol className="list-decimal list-inside space-y-1">
-                <li>Tap the Share button</li>
-                <li>Select "Add to Home Screen"</li>
-                <li>Tap "Add"</li>
-              </ol>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
-    </div>
+              <div className="flex space-x-2">
+                <Button
+                  onClick={handleInstallClick}
+                  className="flex-1 bg-natural-green text-white hover:bg-natural-green/90"
+                  size="sm"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Install
+                </Button>
+                <Button variant="outline" onClick={handleDismiss} size="sm" className="border-gray-300 bg-transparent">
+                  Later
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

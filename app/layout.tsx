@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   title: "TazaTokri - Farm to Table",
   description: "Fresh produce directly from farmers to your table",
   manifest: "/manifest.json",
-  themeColor: "#4CAF50",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -42,6 +41,10 @@ export const metadata: Metadata = {
     generator: 'v0.dev'
 }
 
+export const viewport = {
+  themeColor: "#4CAF50",
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -60,7 +63,6 @@ export default function RootLayout({
         <meta name="msapplication-config" content="/icons/browserconfig.xml" />
         <meta name="msapplication-TileColor" content="#4CAF50" />
         <meta name="msapplication-tap-highlight" content="no" />
-        <meta name="theme-color" content="#4CAF50" />
 
         <link rel="apple-touch-icon" href="/icons/touch-icon-iphone.png" />
         <link rel="apple-touch-icon" sizes="152x152" href="/icons/touch-icon-ipad.png" />
@@ -96,18 +98,18 @@ export default function RootLayout({
         {/* Service Worker Registration */}
         <Script id="sw-register" strategy="afterInteractive">
           {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                  .then(function(registration) {
-                    console.log('SW registered: ', registration);
-                  })
-                  .catch(function(registrationError) {
-                    console.log('SW registration failed: ', registrationError);
-                  });
-              });
-            }
-          `}
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+              navigator.serviceWorker.register('/sw.js')
+                .then(function(registration) {
+                  console.log('SW registered: ', registration);
+                })
+                .catch(function(registrationError) {
+                  console.log('SW registration failed: ', registrationError);
+                });
+            });
+          }
+        `}
         </Script>
       </body>
     </html>
