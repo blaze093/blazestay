@@ -72,7 +72,7 @@ export default function SignupBuyerPage() {
 
       toast({
         title: "Account Created Successfully!",
-        description: "Welcome to TazaTokri! You can now start shopping for fresh produce.",
+        description: "Welcome to FreshKart! You can now start shopping for fresh produce.",
       })
 
       router.push("/buyer-dashboard")

@@ -171,12 +171,12 @@ export default function LoginPage() {
               <p className="text-sm text-gray-600">Don't have an account?</p>
               <div className="flex flex-col sm:flex-row gap-2">
                 <Link href="/signup-buyer" className="flex-1">
-                  <Button variant="outline" className="w-full text-sm">
+                  <Button variant="outline" className="w-full text-sm bg-transparent">
                     Sign up as Buyer
                   </Button>
                 </Link>
                 <Link href="/signup-seller" className="flex-1">
-                  <Button variant="outline" className="w-full text-sm">
+                  <Button variant="outline" className="w-full text-sm bg-transparent">
                     Sign up as Farmer
                   </Button>
                 </Link>

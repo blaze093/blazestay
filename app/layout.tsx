@@ -82,7 +82,7 @@ export default function RootLayout({
                   <div className="flex flex-col min-h-screen">
                     <Navbar />
                     <main className="flex-1 pt-16 pb-20 md:pb-0">{children}</main>
-              
+
                     <BottomNavigation />
                   </div>
                   <Toaster />
