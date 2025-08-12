@@ -1,27 +1,40 @@
+"use client"
+
 import type React from "react"
-import type { Metadata } from "next"
-import { redirect } from "next/navigation"
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/components/providers/auth-provider"
 import AdminSidebar from "@/components/admin/admin-sidebar"
+import { Loader2 } from "lucide-react"
 
-export const metadata: Metadata = {
-  title: "FreshKart Admin Panel",
-  description: "Admin panel for FreshKart - Fresh Farm Products Marketplace",
-}
-
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  // This is a server component, so we need to check admin status server-side
-  // In a real app, you'd use a server-side session or token validation
-  // For this example, we'll simulate admin check with a placeholder
+  const { user, loading } = useAuth()
+  const router = useRouter()
 
-  // In production, replace this with proper server-side auth check
-  const isAdmin = true // Placeholder for demo
+  useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        router.push("/login")
+      } else if (user.role !== "admin") {
+        router.push("/")
+      }
+    }
+  }, [user, loading, router])
 
-  if (!isAdmin) {
-    redirect("/login")
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+      </div>
+    )
+  }
+
+  if (!user || user.role !== "admin") {
+    return null // Will redirect appropriately
   }
 
   return (

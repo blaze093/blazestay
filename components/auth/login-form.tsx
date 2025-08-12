@@ -42,12 +42,15 @@ export default function LoginForm({ onViewChange }: LoginFormProps) {
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
 
-      // Check if user exists in Firestore and is a buyer
+      // Check if user exists in Firestore
       const userDoc = await getDoc(doc(db, "users", user.uid))
       if (userDoc.exists()) {
         const userData = userDoc.data()
-        if (userData.role !== "buyer") {
-          setError("This authentication is only for customers. Please use the appropriate login for your role.")
+
+        if (userData.role !== "buyer" && userData.role !== "admin") {
+          setError(
+            "This authentication is only for customers and administrators. Please use the appropriate login for your role.",
+          )
           setLoading(false)
           return
         }
@@ -57,7 +60,11 @@ export default function LoginForm({ onViewChange }: LoginFormProps) {
           description: `Hello ${userData.name}, you're successfully logged in.`,
         })
 
-        router.push("/")
+        if (userData.role === "admin") {
+          router.push("/admin")
+        } else {
+          router.push("/")
+        }
       } else {
         setError("User data not found. Please contact support.")
       }
@@ -92,8 +99,10 @@ export default function LoginForm({ onViewChange }: LoginFormProps) {
         })
       } else {
         const userData = userDoc.data()
-        if (userData.role !== "buyer") {
-          setError("This authentication is only for customers. Please use the appropriate login for your role.")
+        if (userData.role !== "buyer" && userData.role !== "admin") {
+          setError(
+            "This authentication is only for customers and administrators. Please use the appropriate login for your role.",
+          )
           setGoogleLoading(false)
           return
         }
@@ -104,7 +113,16 @@ export default function LoginForm({ onViewChange }: LoginFormProps) {
         description: "You're successfully logged in with Google.",
       })
 
-      router.push("/")
+      if (userDoc.exists()) {
+        const userData = userDoc.data()
+        if (userData.role === "admin") {
+          router.push("/admin")
+        } else {
+          router.push("/")
+        }
+      } else {
+        router.push("/")
+      }
     } catch (error: any) {
       console.error("Google login error:", error)
       setError("Failed to login with Google. Please try again.")

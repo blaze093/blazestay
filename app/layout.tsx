@@ -2,16 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/toaster"
-import { AuthProvider } from "@/components/providers/auth-provider"
-import { CartProvider } from "@/lib/cart-context"
-import { WishlistProvider } from "@/lib/wishlist-context"
-import { MessagingProvider } from "@/lib/messaging-context"
-import Navbar from "@/components/layout/navbar"
-import BottomNavigation from "@/components/layout/bottom-navigation"
-import PWAInstallPrompt from "@/components/pwa/pwa-install-prompt"
-import Script from "next/script"
+import ClientLayout from "./client-layout"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -76,41 +67,7 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/favicon.ico" />
       </head>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <AuthProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <MessagingProvider>
-                  <div className="flex flex-col min-h-screen">
-                    <Navbar />
-                    <main className="flex-1 pt-16 pb-20 md:pb-0">{children}</main>
-
-                    <BottomNavigation />
-                  </div>
-                  <Toaster />
-                  <PWAInstallPrompt />
-                </MessagingProvider>
-              </WishlistProvider>
-            </CartProvider>
-          </AuthProvider>
-        </ThemeProvider>
-
-        {/* Service Worker Registration */}
-        <Script id="sw-register" strategy="afterInteractive">
-          {`
-          if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-              navigator.serviceWorker.register('/sw.js')
-                .then(function(registration) {
-                  console.log('SW registered: ', registration);
-                })
-                .catch(function(registrationError) {
-                  console.log('SW registration failed: ', registrationError);
-                });
-            });
-          }
-        `}
-        </Script>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   )

@@ -123,3 +123,36 @@
 .farm-input {
   @apply border-2 border-natural-green/30 rounded-lg px-3 py-2 focus:border-natural-green focus:ring-2 focus:ring-natural-green/20 transition-all duration-300;
 }
+
+/* Added styles for auth page full-screen experience */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Premium animation utilities */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce 3s infinite;
+}

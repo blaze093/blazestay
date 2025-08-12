@@ -42,6 +42,16 @@ export interface Product {
   updatedAt: Date
 }
 
+export interface Category {
+  id?: string
+  name: string
+  icon: string
+  count: number
+  description?: string
+  createdAt?: Date
+  updatedAt?: Date
+}
+
 export interface Order {
   id: string
   buyerId: string
