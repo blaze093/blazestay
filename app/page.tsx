@@ -20,6 +20,8 @@ import {
   Package,
   List,
   Plus,
+  Search,
+  X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -110,6 +112,7 @@ export default function HomePage() {
   const [currentBanner, setCurrentBanner] = useState(0)
   const [selectedCategory, setSelectedCategory] = useState<string>("All")
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
+  const [searchQuery, setSearchQuery] = useState("")
 
   const features = [
     {
@@ -309,6 +312,26 @@ export default function HomePage() {
     }
   }
 
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      // If no search query, show products based on selected category
+      if (selectedCategory === "All") {
+        setFilteredProducts(products)
+      } else {
+        setFilteredProducts(products.filter((product) => product.category === selectedCategory))
+      }
+    } else {
+      // Filter products based on search query
+      const searchResults = products.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.category.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+      setFilteredProducts(searchResults)
+    }
+  }, [searchQuery, products, selectedCategory])
+
   const filterNearbyProducts = () => {
     if (!userCoordinates) return
 
@@ -356,11 +379,7 @@ export default function HomePage() {
 
   const handleCategoryClick = (categoryName: string) => {
     setSelectedCategory(categoryName)
-    if (categoryName === "All") {
-      setFilteredProducts(products)
-    } else {
-      setFilteredProducts(products.filter((product) => product.category === categoryName))
-    }
+    setSearchQuery("") // Clear search when category is selected
   }
 
   const handleAuthViewChange = (view: AuthView, phone?: string) => {
@@ -393,12 +412,48 @@ export default function HomePage() {
   if (user) {
     return (
       <div className="min-h-screen bg-cream">
-        <div className="bg-white shadow-sm border-b">
+        <div className="sticky top-0 z-50 bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               {/* Left - Greeting */}
               <div className="flex items-center">
                 <h1 className="text-lg font-semibold text-dark-olive">Hi, {user.name.split(" ")[0]}</h1>
+              </div>
+
+              {/* Center - Navigation Items */}
+              <div className="hidden md:flex items-center space-x-6">
+                <Link
+                  href="/"
+                  className="flex items-center space-x-1 text-gray-600 hover:text-dark-olive transition-colors"
+                >
+                  <Home className="h-4 w-4" />
+                  <span className="text-sm font-medium">Home</span>
+                </Link>
+                {user.role === "buyer" && (
+                  <>
+                    <Link
+                      href="/buyer-dashboard/wishlist"
+                      className="flex items-center space-x-1 text-gray-600 hover:text-dark-olive transition-colors"
+                    >
+                      <Heart className="h-4 w-4" />
+                      <span className="text-sm font-medium">Wishlist</span>
+                    </Link>
+                    <Link
+                      href="/cart"
+                      className="flex items-center space-x-1 text-gray-600 hover:text-dark-olive transition-colors"
+                    >
+                      <ShoppingCart className="h-4 w-4" />
+                      <span className="text-sm font-medium">Cart</span>
+                    </Link>
+                    <Link
+                      href="/buyer-dashboard/orders"
+                      className="flex items-center space-x-1 text-gray-600 hover:text-dark-olive transition-colors"
+                    >
+                      <Package className="h-4 w-4" />
+                      <span className="text-sm font-medium">Orders</span>
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Right - Profile and Location */}
@@ -513,6 +568,23 @@ export default function HomePage() {
 
         <section className="py-6">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Search Bar */}
+            <div className="mb-6">
+              <div className="relative max-w-2xl mx-auto">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search for fresh vegetables, fruits, dairy products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-natural-green focus:border-natural-green text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Banner Carousel */}
             <div className="relative overflow-hidden rounded-lg">
               <div
                 className="flex transition-transform duration-500 ease-in-out"
@@ -596,161 +668,85 @@ export default function HomePage() {
               ))}
             </div>
 
-            {selectedCategory === "All" ? (
-              // Show products by category when "All" is selected
-              Object.entries(categoryProducts).map(
-                ([categoryName, products]) =>
-                  products.length > 0 && (
-                    <div key={categoryName} className="mb-8">
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xl font-semibold text-dark-olive">{categoryName}</h3>
-                        <Button variant="outline" size="sm" onClick={() => handleCategoryClick(categoryName)}>
-                          View All
-                        </Button>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {products.slice(0, 4).map((product) => (
-                          <Card key={product.id} className="farm-card overflow-hidden">
-                            <div className="relative">
-                              <Image
-                                src={product.imageURL || "/placeholder.svg?height=150&width=200"}
-                                alt={product.name}
-                                width={200}
-                                height={150}
-                                className="w-full h-36 object-cover"
-                              />
-                              {product.isOrganic && (
-                                <Badge className="absolute top-2 left-2 bg-natural-green text-white text-xs">
-                                  🌿 Organic
-                                </Badge>
-                              )}
-                              {user.role === "buyer" && (
-                                <Button
-                                  size="icon"
-                                  variant="outline"
-                                  className="absolute top-2 right-2 bg-white/80 hover:bg-white h-8 w-8"
-                                  onClick={() => handleWishlistToggle(product)}
-                                >
-                                  <Heart
-                                    className={`h-3 w-3 ${isInWishlist(product.id) ? "fill-current text-red-500" : ""}`}
-                                  />
-                                </Button>
-                              )}
-                            </div>
-
-                            <CardContent className="p-3">
-                              <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-semibold text-sm text-dark-olive truncate">{product.name}</h4>
-                                <div className="text-right">
-                                  <p className="text-lg font-bold text-natural-green">₹{product.price}</p>
-                                  <p className="text-xs text-gray-500">per {product.unit}</p>
-                                </div>
-                              </div>
-
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center text-xs text-gray-600">
-                                  <MapPin className="h-3 w-3 mr-1" />
-                                  <span className="truncate">{product.location}</span>
-                                </div>
-                                <div className="flex items-center">
-                                  <Star className="h-3 w-3 text-yellow-400 fill-current mr-1" />
-                                  <span className="text-xs font-medium">{product.rating}</span>
-                                </div>
-                              </div>
-
-                              {user.role === "buyer" && (
-                                <Button
-                                  size="sm"
-                                  className="w-full farm-button text-xs"
-                                  onClick={() => handleAddToCart(product)}
-                                >
-                                  <ShoppingCart className="mr-1 h-3 w-3" />
-                                  Add to Cart
-                                </Button>
-                              )}
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-                  ),
-              )
-            ) : (
-              // Show filtered products for selected category
-              <div className="mb-8">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-semibold text-dark-olive">
-                    {selectedCategory} ({filteredProducts.length} products)
-                  </h3>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {filteredProducts.map((product) => (
-                    <Card key={product.id} className="farm-card overflow-hidden">
-                      <div className="relative">
-                        <Image
-                          src={product.imageURL || "/placeholder.svg?height=150&width=200"}
-                          alt={product.name}
-                          width={200}
-                          height={150}
-                          className="w-full h-36 object-cover"
-                        />
-                        {product.isOrganic && (
-                          <Badge className="absolute top-2 left-2 bg-natural-green text-white text-xs">
-                            🌿 Organic
-                          </Badge>
-                        )}
-                        {user.role === "buyer" && (
-                          <Button
-                            size="icon"
-                            variant="outline"
-                            className="absolute top-2 right-2 bg-white/80 hover:bg-white h-8 w-8"
-                            onClick={() => handleWishlistToggle(product)}
-                          >
-                            <Heart
-                              className={`h-3 w-3 ${isInWishlist(product.id) ? "fill-current text-red-500" : ""}`}
-                            />
-                          </Button>
-                        )}
-                      </div>
-
-                      <CardContent className="p-3">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-semibold text-sm text-dark-olive truncate">{product.name}</h4>
-                          <div className="text-right">
-                            <p className="text-lg font-bold text-natural-green">₹{product.price}</p>
-                            <p className="text-xs text-gray-500">per {product.unit}</p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center text-xs text-gray-600">
-                            <MapPin className="h-3 w-3 mr-1" />
-                            <span className="truncate">{product.location}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <Star className="h-3 w-3 text-yellow-400 fill-current mr-1" />
-                            <span className="text-xs font-medium">{product.rating}</span>
-                          </div>
-                        </div>
-
-                        {user.role === "buyer" && (
-                          <Button
-                            size="sm"
-                            className="w-full farm-button text-xs"
-                            onClick={() => handleAddToCart(product)}
-                          >
-                            <ShoppingCart className="mr-1 h-3 w-3" />
-                            Add to Cart
-                          </Button>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold text-dark-olive">
+                  {searchQuery.trim() !== ""
+                    ? `Search Results for "${searchQuery}" (${filteredProducts.length} products)`
+                    : `${selectedCategory} (${filteredProducts.length} products)`}
+                </h3>
+                {searchQuery.trim() !== "" && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="text-sm text-gray-500 hover:text-dark-olive flex items-center gap-1"
+                  >
+                    <X className="h-4 w-4" />
+                    Clear Search
+                  </button>
+                )}
               </div>
-            )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {filteredProducts.map((product) => (
+                  <Card key={product.id} className="farm-card overflow-hidden">
+                    <div className="relative">
+                      <Image
+                        src={product.imageURL || "/placeholder.svg?height=150&width=200"}
+                        alt={product.name}
+                        width={200}
+                        height={150}
+                        className="w-full h-36 object-cover"
+                      />
+                      {product.isOrganic && (
+                        <Badge className="absolute top-2 left-2 bg-natural-green text-white text-xs">🌿 Organic</Badge>
+                      )}
+                      {user.role === "buyer" && (
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="absolute top-2 right-2 bg-white/80 hover:bg-white h-8 w-8"
+                          onClick={() => handleWishlistToggle(product)}
+                        >
+                          <Heart className={`h-3 w-3 ${isInWishlist(product.id) ? "fill-current text-red-500" : ""}`} />
+                        </Button>
+                      )}
+                    </div>
+
+                    <CardContent className="p-3">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-semibold text-sm text-dark-olive truncate">{product.name}</h4>
+                        <div className="text-right">
+                          <p className="text-lg font-bold text-natural-green">₹{product.price}</p>
+                          <p className="text-xs text-gray-500">per {product.unit}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center text-xs text-gray-600">
+                          <MapPin className="h-3 w-3 mr-1" />
+                          <span className="truncate">{product.location}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <Star className="h-3 w-3 text-yellow-400 fill-current mr-1" />
+                          <span className="text-xs font-medium">{product.rating}</span>
+                        </div>
+                      </div>
+
+                      {user.role === "buyer" && (
+                        <Button
+                          size="sm"
+                          className="w-full farm-button text-xs"
+                          onClick={() => handleAddToCart(product)}
+                        >
+                          <ShoppingCart className="mr-1 h-3 w-3" />
+                          Add to Cart
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 

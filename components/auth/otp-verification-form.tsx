@@ -5,6 +5,9 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
+import { RecaptchaVerifier, signInWithPhoneNumber, PhoneAuthProvider, signInWithCredential } from "firebase/auth"
+import { doc, getDoc, setDoc } from "firebase/firestore"
+import { auth, db } from "@/lib/firebase"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,9 +27,34 @@ export default function OTPVerificationForm({ phoneNumber, onViewChange }: OTPVe
   const [error, setError] = useState("")
   const [timeLeft, setTimeLeft] = useState(60)
   const [canResend, setCanResend] = useState(false)
+  const [verificationId, setVerificationId] = useState("")
+  const [recaptchaVerifier, setRecaptchaVerifier] = useState<RecaptchaVerifier | null>(null)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const router = useRouter()
   const { toast } = useToast()
+
+  useEffect(() => {
+    const initializeRecaptcha = () => {
+      if (!recaptchaVerifier) {
+        const verifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "invisible",
+          callback: () => {
+            // reCAPTCHA solved, allow signInWithPhoneNumber
+          },
+        })
+        setRecaptchaVerifier(verifier)
+        sendOTP(verifier)
+      }
+    }
+
+    initializeRecaptcha()
+
+    return () => {
+      if (recaptchaVerifier) {
+        recaptchaVerifier.clear()
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -36,6 +64,25 @@ export default function OTPVerificationForm({ phoneNumber, onViewChange }: OTPVe
       setCanResend(true)
     }
   }, [timeLeft])
+
+  const sendOTP = async (verifier?: RecaptchaVerifier) => {
+    try {
+      const appVerifier = verifier || recaptchaVerifier
+      if (!appVerifier) return
+
+      const formattedPhone = phoneNumber.startsWith("+") ? phoneNumber : `+91${phoneNumber}`
+      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier)
+      setVerificationId(confirmationResult.verificationId)
+
+      toast({
+        title: "OTP Sent!",
+        description: "Please check your phone for the verification code.",
+      })
+    } catch (error: any) {
+      console.error("Error sending OTP:", error)
+      setError("Failed to send OTP. Please try again.")
+    }
+  }
 
   const handleOtpChange = (index: number, value: string) => {
     if (value.length > 1) return
@@ -68,35 +115,73 @@ export default function OTPVerificationForm({ phoneNumber, onViewChange }: OTPVe
       return
     }
 
-    // Simulate OTP verification (in real app, you'd verify with Firebase)
-    setTimeout(() => {
-      if (otpCode === "123456") {
-        toast({
-          title: "Phone Verified!",
-          description: "Your phone number has been successfully verified.",
-        })
-        router.push("/")
-      } else {
-        setError("Invalid OTP. Please try again.")
+    try {
+      if (!verificationId) {
+        setError("Verification ID not found. Please resend OTP.")
+        setLoading(false)
+        return
       }
+
+      const credential = PhoneAuthProvider.credential(verificationId, otpCode)
+      const result = await signInWithCredential(auth, credential)
+      const user = result.user
+
+      // Check if user exists in Firestore, if not create a buyer account
+      const userDoc = await getDoc(doc(db, "users", user.uid))
+      if (!userDoc.exists()) {
+        await setDoc(doc(db, "users", user.uid), {
+          name: user.displayName || "User",
+          email: user.email || "",
+          role: "buyer",
+          phone: phoneNumber,
+          createdAt: new Date(),
+          profileImage: "",
+          address: "",
+        })
+      }
+
+      toast({
+        title: "🎉 Phone Verified!",
+        description: "Your phone number has been successfully verified.",
+        duration: 2000,
+      })
+
+      // Redirect to home page
+      setTimeout(() => {
+        router.push("/")
+      }, 500)
+    } catch (error: any) {
+      console.error("OTP verification error:", error)
+      if (error.code === "auth/invalid-verification-code") {
+        setError("Invalid OTP. Please check and try again.")
+      } else {
+        setError("Failed to verify OTP. Please try again.")
+      }
+    } finally {
       setLoading(false)
-    }, 2000)
+    }
   }
 
   const handleResendOtp = async () => {
     setResendLoading(true)
     setError("")
 
-    // Simulate resending OTP
-    setTimeout(() => {
+    try {
+      if (recaptchaVerifier) {
+        await sendOTP()
+        setTimeLeft(60)
+        setCanResend(false)
+        setOtp(["", "", "", "", "", ""]) // Clear previous OTP
+        toast({
+          title: "OTP Resent",
+          description: "A new OTP has been sent to your phone.",
+        })
+      }
+    } catch (error) {
+      setError("Failed to resend OTP. Please try again.")
+    } finally {
       setResendLoading(false)
-      setTimeLeft(60)
-      setCanResend(false)
-      toast({
-        title: "OTP Resent",
-        description: "A new OTP has been sent to your phone.",
-      })
-    }, 2000)
+    }
   }
 
   return (
@@ -131,6 +216,8 @@ export default function OTPVerificationForm({ phoneNumber, onViewChange }: OTPVe
       </CardHeader>
 
       <CardContent className="space-y-6">
+        <div id="recaptcha-container"></div>
+
         {error && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Alert className="border-red-200 bg-red-50">

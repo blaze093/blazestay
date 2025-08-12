@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { useAuth } from "@/components/providers/auth-provider"
 import { useCart } from "@/lib/cart-context"
 import { Badge } from "@/components/ui/badge"
-import { Home, ShoppingBag, ShoppingCart, User, Package, Plus, MessageCircle } from "lucide-react"
+import { Home, Heart, ShoppingCart, User, Package, Plus, MessageCircle } from "lucide-react"
 
 export default function BottomNavigation() {
   const { user } = useAuth()
@@ -45,10 +45,10 @@ export default function BottomNavigation() {
 
   const buyerNavItems = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: ShoppingBag, label: "Products", href: "/products" },
+    { icon: Heart, label: "Wishlist", href: "/buyer-dashboard/wishlist" },
     { icon: ShoppingCart, label: "Cart", href: "/cart", badge: cartItemsCount },
-    { icon: MessageCircle, label: "Messages", href: "/messages" },
-    { icon: User, label: "Profile", href: "/buyer-dashboard" },
+    { icon: Package, label: "Orders", href: "/buyer-dashboard/orders" },
+    { icon: User, label: "Profile", href: "/profile" },
   ]
 
   const sellerNavItems = [
@@ -61,7 +61,7 @@ export default function BottomNavigation() {
 
   const guestNavItems = [
     { icon: Home, label: "Home", href: "/" },
-    { icon: ShoppingBag, label: "Products", href: "/products" },
+    { icon: Heart, label: "Products", href: "/products" },
     { icon: User, label: "Login", href: "/login" },
   ]
 

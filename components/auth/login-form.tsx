@@ -87,8 +87,10 @@ export default function LoginForm({ onViewChange }: LoginFormProps) {
 
       // Check if user exists, if not create a buyer account
       const userDoc = await getDoc(doc(db, "users", user.uid))
+      let userData = null
+
       if (!userDoc.exists()) {
-        await setDoc(doc(db, "users", user.uid), {
+        userData = {
           name: user.displayName || "User",
           email: user.email,
           role: "buyer",
@@ -96,9 +98,10 @@ export default function LoginForm({ onViewChange }: LoginFormProps) {
           createdAt: new Date(),
           profileImage: user.photoURL || "",
           address: "",
-        })
+        }
+        await setDoc(doc(db, "users", user.uid), userData)
       } else {
-        const userData = userDoc.data()
+        userData = userDoc.data()
         if (userData.role !== "buyer" && userData.role !== "admin") {
           setError(
             "This authentication is only for customers and administrators. Please use the appropriate login for your role.",
@@ -109,20 +112,19 @@ export default function LoginForm({ onViewChange }: LoginFormProps) {
       }
 
       toast({
-        title: "Welcome!",
-        description: "You're successfully logged in with Google.",
+        title: "🎉 Welcome!",
+        description: `Hello ${userData.name}! You're successfully logged in with Google.`,
+        duration: 2000,
       })
 
-      if (userDoc.exists()) {
-        const userData = userDoc.data()
+      // Immediate redirect based on role
+      setTimeout(() => {
         if (userData.role === "admin") {
           router.push("/admin")
         } else {
           router.push("/")
         }
-      } else {
-        router.push("/")
-      }
+      }, 500) // Small delay to show the toast
     } catch (error: any) {
       console.error("Google login error:", error)
       setError("Failed to login with Google. Please try again.")

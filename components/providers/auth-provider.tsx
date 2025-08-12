@@ -24,6 +24,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true)
+
       if (firebaseUser) {
         setFirebaseUser(firebaseUser)
 
@@ -42,6 +44,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               address: userData.address,
               createdAt: userData.createdAt?.toDate() || new Date(),
             })
+          } else {
+            // If user document doesn't exist, create a basic one
+            console.warn("User document not found, user may need to complete profile")
           }
         } catch (error) {
           console.error("Error fetching user data:", error)
@@ -61,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await signOut(auth)
       setUser(null)
       setFirebaseUser(null)
+      localStorage.removeItem("user-preferences")
     } catch (error) {
       console.error("Error signing out:", error)
     }
