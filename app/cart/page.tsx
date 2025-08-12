@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAuth } from "@/components/providers/auth-provider"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/lib/cart-context"
-import { collection, addDoc } from "firebase/firestore"
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { Address } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -15,6 +15,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import {
   ShoppingCart,
   Plus,
@@ -27,6 +36,7 @@ import {
   ArrowLeft,
   Loader2,
   Leaf,
+  Star,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -39,27 +49,138 @@ export default function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart()
 
   const [orderLoading, setOrderLoading] = useState(false)
-  const [shippingAddress, setShippingAddress] = useState<Address>({
+  const [paymentMethod, setPaymentMethod] = useState("cod")
+
+  const [addresses, setAddresses] = useState<Address[]>([])
+  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null)
+  const [addressLoading, setAddressLoading] = useState(false)
+  const [showAddressDialog, setShowAddressDialog] = useState(false)
+  const [addressForm, setAddressForm] = useState<Omit<Address, "id" | "createdAt" | "updatedAt">>({
+    fullName: "",
+    phone: "",
     street: "",
     city: "",
     state: "",
     pincode: "",
     country: "India",
+    landmark: "",
+    isDefault: false,
   })
-  const [paymentMethod, setPaymentMethod] = useState("cod")
 
-  if (!user) {
-    router.push("/login")
-    return null
+  useEffect(() => {
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    if (user.role !== "buyer") {
+      router.push("/seller-dashboard")
+      return
+    }
+
+    loadAddresses()
+  }, [user, router])
+
+  const loadAddresses = async () => {
+    if (!user) return
+
+    setAddressLoading(true)
+    try {
+      const addressesQuery = query(collection(db, "addresses"), where("userId", "==", user.uid))
+      const addressesSnapshot = await getDocs(addressesQuery)
+      const addressesList = addressesSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Address[]
+
+      const sortedAddresses = addressesList.sort((a, b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0))
+      setAddresses(sortedAddresses)
+
+      // Auto-select default address
+      const defaultAddress = sortedAddresses.find((addr) => addr.isDefault)
+      if (defaultAddress) {
+        setSelectedAddress(defaultAddress)
+      }
+    } catch (error) {
+      console.error("Error loading addresses:", error)
+      toast({
+        title: "Error",
+        description: "Failed to load addresses",
+        variant: "destructive",
+      })
+    } finally {
+      setAddressLoading(false)
+    }
   }
 
-  if (user.role !== "buyer") {
-    router.push("/seller-dashboard")
-    return null
+  const handleAddressFormChange = (field: keyof typeof addressForm, value: string | boolean) => {
+    setAddressForm((prev) => ({ ...prev, [field]: value }))
   }
 
-  const handleAddressChange = (field: keyof Address, value: string) => {
-    setShippingAddress((prev) => ({ ...prev, [field]: value }))
+  const handleSaveNewAddress = async () => {
+    if (!user) return
+
+    // Validate required fields
+    if (
+      !addressForm.fullName ||
+      !addressForm.phone ||
+      !addressForm.street ||
+      !addressForm.city ||
+      !addressForm.state ||
+      !addressForm.pincode
+    ) {
+      toast({
+        title: "Incomplete Address",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setAddressLoading(true)
+    try {
+      const addressData = {
+        ...addressForm,
+        userId: user.uid,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      const docRef = await addDoc(collection(db, "addresses"), addressData)
+      const newAddress = { id: docRef.id, ...addressData }
+
+      toast({
+        title: "Address Added",
+        description: "Your new address has been saved successfully",
+      })
+
+      // Reset form and reload addresses
+      setAddressForm({
+        fullName: user.name || "",
+        phone: user.phone || "",
+        street: "",
+        city: "",
+        state: "",
+        pincode: "",
+        country: "India",
+        landmark: "",
+        isDefault: false,
+      })
+      setShowAddressDialog(false)
+
+      // Select the new address
+      setSelectedAddress(newAddress)
+      loadAddresses()
+    } catch (error) {
+      console.error("Error saving address:", error)
+      toast({
+        title: "Error",
+        description: "Failed to save address. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setAddressLoading(false)
+    }
   }
 
   const calculateSubtotal = () => {
@@ -78,11 +199,10 @@ export default function CartPage() {
   const handlePlaceOrder = async () => {
     if (!user || cartItems.length === 0) return
 
-    // Validate shipping address
-    if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.state || !shippingAddress.pincode) {
+    if (!selectedAddress) {
       toast({
-        title: "Incomplete Address",
-        description: "Please fill in all shipping address fields",
+        title: "No Delivery Address",
+        description: "Please select a delivery address to continue",
         variant: "destructive",
       })
       return
@@ -108,7 +228,13 @@ export default function CartPage() {
         })),
         totalAmount: calculateTotal(),
         status: "pending",
-        shippingAddress,
+        shippingAddress: {
+          street: selectedAddress.street,
+          city: selectedAddress.city,
+          state: selectedAddress.state,
+          pincode: selectedAddress.pincode,
+          country: selectedAddress.country,
+        },
         paymentMethod,
         paymentStatus: paymentMethod === "cod" ? "pending" : "paid",
         createdAt: new Date(),
@@ -138,6 +264,8 @@ export default function CartPage() {
       setOrderLoading(false)
     }
   }
+
+  if (!user) return null
 
   return (
     <div className="min-h-screen bg-cream p-6">
@@ -218,7 +346,7 @@ export default function CartPage() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-8 w-8 bg-transparent"
                           onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                         >
                           <Minus className="h-4 w-4" />
@@ -227,7 +355,7 @@ export default function CartPage() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-8 w-8 bg-transparent"
                           onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                           disabled={item.quantity >= item.product.stock}
                         >
@@ -300,62 +428,197 @@ export default function CartPage() {
                     </TabsList>
 
                     <TabsContent value="address" className="space-y-4">
-                      <div>
-                        <Label htmlFor="street">Street Address</Label>
-                        <Textarea
-                          id="street"
-                          value={shippingAddress.street}
-                          onChange={(e) => handleAddressChange("street", e.target.value)}
-                          className="farm-input"
-                          placeholder="Enter your complete address"
-                          rows={2}
-                        />
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-medium">Select Delivery Address</h3>
+                        <Dialog open={showAddressDialog} onOpenChange={setShowAddressDialog}>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setAddressForm({
+                                  fullName: user.name || "",
+                                  phone: user.phone || "",
+                                  street: "",
+                                  city: "",
+                                  state: "",
+                                  pincode: "",
+                                  country: "India",
+                                  landmark: "",
+                                  isDefault: false,
+                                })
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Add New
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[500px]">
+                            <DialogHeader>
+                              <DialogTitle>Add New Address</DialogTitle>
+                              <DialogDescription>Add a new delivery address for this order</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label htmlFor="fullName">Full Name *</Label>
+                                  <Input
+                                    id="fullName"
+                                    value={addressForm.fullName}
+                                    onChange={(e) => handleAddressFormChange("fullName", e.target.value)}
+                                    className="farm-input"
+                                    placeholder="Full name"
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="phone">Phone Number *</Label>
+                                  <Input
+                                    id="phone"
+                                    value={addressForm.phone}
+                                    onChange={(e) => handleAddressFormChange("phone", e.target.value)}
+                                    className="farm-input"
+                                    placeholder="Phone number"
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <Label htmlFor="street">Street Address *</Label>
+                                <Textarea
+                                  id="street"
+                                  value={addressForm.street}
+                                  onChange={(e) => handleAddressFormChange("street", e.target.value)}
+                                  className="farm-input"
+                                  placeholder="House number, street name, area"
+                                  rows={2}
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label htmlFor="city">City *</Label>
+                                  <Input
+                                    id="city"
+                                    value={addressForm.city}
+                                    onChange={(e) => handleAddressFormChange("city", e.target.value)}
+                                    className="farm-input"
+                                    placeholder="City"
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="state">State *</Label>
+                                  <Input
+                                    id="state"
+                                    value={addressForm.state}
+                                    onChange={(e) => handleAddressFormChange("state", e.target.value)}
+                                    className="farm-input"
+                                    placeholder="State"
+                                  />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label htmlFor="pincode">Pincode *</Label>
+                                  <Input
+                                    id="pincode"
+                                    value={addressForm.pincode}
+                                    onChange={(e) => handleAddressFormChange("pincode", e.target.value)}
+                                    className="farm-input"
+                                    placeholder="Pincode"
+                                  />
+                                </div>
+                                <div>
+                                  <Label htmlFor="country">Country</Label>
+                                  <Input
+                                    id="country"
+                                    value={addressForm.country}
+                                    onChange={(e) => handleAddressFormChange("country", e.target.value)}
+                                    className="farm-input"
+                                    disabled
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <Label htmlFor="landmark">Landmark (Optional)</Label>
+                                <Input
+                                  id="landmark"
+                                  value={addressForm.landmark}
+                                  onChange={(e) => handleAddressFormChange("landmark", e.target.value)}
+                                  className="farm-input"
+                                  placeholder="Nearby landmark"
+                                />
+                              </div>
+                            </div>
+                            <DialogFooter>
+                              <Button variant="outline" onClick={() => setShowAddressDialog(false)}>
+                                Cancel
+                              </Button>
+                              <Button onClick={handleSaveNewAddress} disabled={addressLoading} className="farm-button">
+                                {addressLoading ? (
+                                  <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Saving...
+                                  </>
+                                ) : (
+                                  "Save & Select"
+                                )}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="city">City</Label>
-                          <Input
-                            id="city"
-                            value={shippingAddress.city}
-                            onChange={(e) => handleAddressChange("city", e.target.value)}
-                            className="farm-input"
-                            placeholder="City"
-                          />
+
+                      {addressLoading && addresses.length === 0 ? (
+                        <div className="flex items-center justify-center py-4">
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          Loading addresses...
                         </div>
-                        <div>
-                          <Label htmlFor="state">State</Label>
-                          <Input
-                            id="state"
-                            value={shippingAddress.state}
-                            onChange={(e) => handleAddressChange("state", e.target.value)}
-                            className="farm-input"
-                            placeholder="State"
-                          />
+                      ) : addresses.length === 0 ? (
+                        <div className="text-center py-6 border-2 border-dashed border-gray-300 rounded-lg">
+                          <MapPin className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-gray-600 mb-2">No saved addresses</p>
+                          <p className="text-sm text-gray-500">Add your first address to continue</p>
                         </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="pincode">Pincode</Label>
-                          <Input
-                            id="pincode"
-                            value={shippingAddress.pincode}
-                            onChange={(e) => handleAddressChange("pincode", e.target.value)}
-                            className="farm-input"
-                            placeholder="Pincode"
-                          />
+                      ) : (
+                        <div className="space-y-3">
+                          {addresses.map((address) => (
+                            <div
+                              key={address.id}
+                              className={`border rounded-lg p-3 cursor-pointer transition-colors ${
+                                selectedAddress?.id === address.id
+                                  ? "border-natural-green bg-green-50"
+                                  : "border-gray-200 hover:border-gray-300"
+                              }`}
+                              onClick={() => setSelectedAddress(address)}
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-2">
+                                    <input
+                                      type="radio"
+                                      checked={selectedAddress?.id === address.id}
+                                      onChange={() => setSelectedAddress(address)}
+                                      className="text-natural-green"
+                                    />
+                                    <h4 className="font-medium text-dark-olive">{address.fullName}</h4>
+                                    {address.isDefault && (
+                                      <Badge variant="outline" className="text-xs">
+                                        <Star className="h-3 w-3 mr-1" />
+                                        Default
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <p className="text-sm text-gray-600 ml-6">{address.phone}</p>
+                                  <p className="text-sm text-gray-700 ml-6 mt-1">
+                                    {address.street}, {address.city}, {address.state} - {address.pincode}
+                                  </p>
+                                  {address.landmark && (
+                                    <p className="text-sm text-gray-600 ml-6">Near: {address.landmark}</p>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                        <div>
-                          <Label htmlFor="country">Country</Label>
-                          <Input
-                            id="country"
-                            value={shippingAddress.country}
-                            onChange={(e) => handleAddressChange("country", e.target.value)}
-                            className="farm-input"
-                            placeholder="Country"
-                            disabled
-                          />
-                        </div>
-                      </div>
+                      )}
                     </TabsContent>
 
                     <TabsContent value="payment" className="space-y-4">
@@ -394,7 +657,11 @@ export default function CartPage() {
                     </TabsContent>
                   </Tabs>
 
-                  <Button className="w-full farm-button mt-6" onClick={handlePlaceOrder} disabled={orderLoading}>
+                  <Button
+                    className="w-full farm-button mt-6"
+                    onClick={handlePlaceOrder}
+                    disabled={orderLoading || !selectedAddress}
+                  >
                     {orderLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

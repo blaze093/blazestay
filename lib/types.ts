@@ -87,15 +87,22 @@ export interface OrderItem {
 }
 
 export interface Address {
+  id?: string
+  fullName: string
+  phone: string
   street: string
   city: string
   state: string
   pincode: string
   country: string
+  landmark?: string
+  isDefault?: boolean
   coordinates?: {
     latitude: number
     longitude: number
   }
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 export interface Review {
